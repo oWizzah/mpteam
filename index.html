@@ -1,0 +1,25 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MP TEAM — Steam</title><style>body{font:16px system-ui;background:#101820;color:#e9f3ff;display:grid;place-items:center;min-height:100vh;margin:0}.card{max-width:650px;background:#1b2838;padding:32px;border-radius:18px;box-shadow:0 15px 60px #0005}h1{margin-top:0;color:#66c0f4}a.btn{display:inline-block;background:#66c0f4;color:#10202d;text-decoration:none;font-weight:800;padding:15px 22px;border-radius:10px}li{margin:10px 0}code{color:#a7e7ff}small{color:#b8c8d9}</style></head><body><main class="card"><h1>⚡ MP TEAM — Steam</h1><p>Adiciona os membros da equipa e tenta aplicar as alcunhas <strong>MP</strong>, sem instalar extensões.</p><ol><li>No Chrome, mostra a barra de favoritos com <code>Ctrl+Shift+B</code>.</li><li>Arrasta o botão azul <strong>⚡ MP TEAM</strong> para a barra de favoritos (não basta clicar aqui).</li><li>Abre <a href="https://steamcommunity.com/my/friends/" target="_blank" rel="noopener" style="color:#66c0f4">Steam Community → Amigos</a> e inicia sessão.</li><li>Clica no favorito <strong>⚡ MP TEAM</strong> e confirma a execução.</li></ol><p><a class="btn" id="bookmarklet" href="#">⚡ MP TEAM — ARRASTA PARA FAVORITOS</a></p><p><small>O script só corre quando clicas no favorito dentro de steamcommunity.com. Não partilhes cookies, palavras-passe ou IDs de sessão. Pedidos de amizade e alcunhas usam endpoints internos da Steam e podem falhar ou mudar.</small></p></main><script>
+const players = [
+["76561197965037572","WaterSoup"],["76561198432746295","Tavares"],["76561198875125145","CX"],["76561197991567353","Blizz4rD"],["76561198011935582","Squeeze"],["76561198415235113","Carlos †"],["76561198423076898","Enjoyer"],["76561198305465574","rato"],["76561198882052331","Scuff"],["76561198351105764","Wosdyo"],["76561198054200991","Neo"],["76561199388028456","FNUF"],["76561198026059762","AgenteBreta"],["76561198340944408","Bern"],["76561199045247233","MannyG"],["76561198116241851","Miller"],["76561199433241739","Wizza"],["76561199143556901","Boonky."],["76561198122476225","Andre"]];
+const runner = async function(rows){
+if(location.hostname!=="steamcommunity.com"){alert("Abre steamcommunity.com/my/friends/ antes de usar o favorito.");return;}
+if(!confirm("MP TEAM: enviar pedidos de amizade e tentar aplicar alcunhas MP aos "+rows.length+" jogadores?"))return;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const panel=document.createElement("div");panel.style.cssText="position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#171a21;color:white;border:1px solid #66c0f4;padding:14px;max-width:360px;font:13px Arial;border-radius:8px;box-shadow:0 5px 20px #0008";
+const status=document.createElement("div");status.textContent="A iniciar…";const cancel=document.createElement("button");cancel.textContent="Parar";cancel.style.cssText="margin-top:8px;padding:6px 14px;cursor:pointer";let stopped=false;cancel.onclick=()=>{stopped=true;status.textContent="A parar…"};panel.append(status,cancel);document.body.append(panel);
+try{
+const session=typeof window.g_sessionID==="string"?window.g_sessionID:null;
+const own=typeof window.g_steamID!=="undefined"?String(window.g_steamID):null;
+if(!session)throw Error("Sessão Steam não detetada. Abre /my/friends/ e atualiza a página.");
+const response=await fetch("/my/friends/",{credentials:"include"});if(!response.ok)throw Error("Não foi possível obter a lista de amigos.");
+const doc=new DOMParser().parseFromString(await response.text(),"text/html");const friends=new Set([...doc.querySelectorAll("[data-steamid]")].map(x=>x.getAttribute("data-steamid")));
+let done=0;for(const [id,name] of rows){if(stopped)break;if(id===own){done++;continue;}status.textContent=`${done+1}/${rows.length}: MP ${name}`;
+try{let friendResult="Já amigo";if(!friends.has(id)){const r=await fetch("/actions/AddFriendAjax",{method:"POST",credentials:"include",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({sessionID:session,steamid:id,accept_invite:"0"})});friendResult="Pedido HTTP "+r.status;}
+const nick=await fetch("/profiles/"+id+"/ajaxsetnickname/",{method:"POST",credentials:"include",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({nickname:"MP "+name,sessionid:session})});console.log("MP TEAM",id,name,friendResult,"Alcunha HTTP",nick.status);status.textContent=`${done+1}/${rows.length}: MP ${name} · ${friendResult} · alcunha HTTP ${nick.status}`;
+}catch(e){console.warn("MP TEAM",id,e);status.textContent=`${done+1}/${rows.length}: erro ${name}`;}done++;await sleep(3000);}
+status.textContent=stopped?`Parado (${done}/${rows.length})`:`Concluído (${done}/${rows.length}). Consulta a consola para resultados.`;
+}catch(e){status.textContent="Erro: "+e.message;console.error("MP TEAM",e);}
+};
+const payload="("+runner.toString()+")("+JSON.stringify(players)+")";
+document.getElementById("bookmarklet").href="javascript:"+encodeURIComponent(payload);
+</script></body></html>
