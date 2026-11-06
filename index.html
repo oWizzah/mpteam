@@ -1,5 +1,64 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a0e10"><meta name="description" content="MP TEAM — your live Rust squad roster and Steam team setup."><title>MP TEAM | Rust Squad</title><style>
 :root{color-scheme:dark;--bg:#0a0e10;--panel:#151b1e;--panel2:#1b2325;--stroke:#303b3a;--ink:#f3f3ec;--muted:#a1aaa5;--accent:#ef7845;--accent2:#ffb18a;--green:#a5d6b2;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Arial,sans-serif}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(ellipse 80% 50% at 90% -10%,#2b3a31 0,transparent 70%),linear-gradient(155deg,#111819,#090d0e 70%);min-height:100vh}a{color:inherit}button,select{font:inherit}.shell{max-width:1200px;margin:auto;padding:0 30px}.top{height:90px;border-bottom:1px solid #ffffff16;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:13px;font-size:20px;font-weight:900;letter-spacing:.06em}.brand-mark{background:var(--accent);color:#111713;width:42px;height:42px;display:grid;place-items:center;clip-path:polygon(50% 0,94% 25%,94% 75%,50% 100%,6% 75%,6% 25%)}.brand small{font-size:11px;color:#8e9e96;letter-spacing:.12em;margin-left:4px}.right{display:flex;align-items:center;gap:20px}.navlink{text-decoration:none;color:#b6c4bd;font-size:13px;font-weight:700}.lang{background:#20292a;border:1px solid #3a4947;border-radius:9px;padding:10px 12px;color:#fff}.hero{padding:85px 0 70px;display:grid;grid-template-columns:1.04fr .96fr;gap:55px;align-items:center}.eyebrow{font-size:12px;font-weight:850;letter-spacing:.19em;color:var(--green);text-transform:uppercase}.eyebrow:before{content:'';display:inline-block;width:22px;height:2px;background:var(--accent);vertical-align:middle;margin-right:12px}.hero h1{font-size:clamp(44px,6vw,80px);letter-spacing:-.065em;line-height:1.02;margin:22px 0}.hero h1 em{font-style:normal;color:var(--accent)}.intro{color:#b7c1bb;font-size:17px;line-height:1.75;max-width:540px}.stats{display:flex;gap:35px;margin:32px 0 34px}.metric{padding-left:14px;border-left:2px solid var(--accent)}.metric strong{display:block;font-size:25px;line-height:1.2}.metric span{display:block;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:5px}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:grab;background:var(--accent);border:1px solid #ff9d71;color:#151915;padding:17px 24px;border-radius:10px;font-weight:900;box-shadow:0 12px 34px #f36d3524;transition:.2s}.btn:hover{background:#ff8c59;transform:translateY(-2px)}.hint{color:#9aa8a1;font-size:12px;line-height:1.6;max-width:500px}.preview{border:1px solid #45524b;border-radius:19px;padding:24px;background:linear-gradient(150deg,#242e2a,#141a1b 80%);box-shadow:0 35px 100px #0008;position:relative}.preview:before{content:'';position:absolute;inset:-10px;background:linear-gradient(125deg,#ef784528,transparent 60%);filter:blur(18px);z-index:-1}.preview-header,.section-heading,.preview-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px}.preview-header{border-bottom:1px solid #ffffff1c;padding-bottom:18px}.preview-header strong{font-size:12px;letter-spacing:.14em}.live{background:#294136;border:1px solid #476e56;border-radius:99px;padding:7px 11px;color:#b4e4c2;font-size:11px;font-weight:800}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:18px;max-height:450px;overflow:auto;padding-right:4px}.player{background:#141c1b;border:1px solid #34423d;border-radius:9px;padding:11px;display:flex;gap:10px;align-items:center;min-width:0}.avatar{width:35px;height:35px;flex:none;border-radius:8px;background:#36483d;color:#cde8d2;display:grid;place-items:center;font-weight:850;font-size:12px}.player-info{min-width:0}.player b{font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.player b:before{content:'MP  ';color:var(--accent)}.player small{font-size:10px;color:#92a39a;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.preview-bottom{margin-top:17px;color:#91a49a;font-size:12px}.section{padding:65px 0 90px;border-top:1px solid #ffffff1a}.section h2{font-size:35px;letter-spacing:-.04em;margin:10px 0 8px}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}.step{background:#192121;border:1px solid #36413c;border-radius:13px;padding:23px;min-height:200px}.step-num{color:var(--accent);font-weight:900;font-size:13px;letter-spacing:.14em}.step p{color:#b3bdb7;font-size:14px;line-height:1.6}.step h3{margin:27px 0 9px;font-size:16px}.notice{background:#2b211b;border:1px solid #71513d;border-radius:11px;padding:16px 19px;color:#e8c9b5;margin-top:20px;font-size:13px}.error{color:#ffb5a1;font-size:13px}.footer{border-top:1px solid #ffffff15;padding:27px 0 40px;color:#84948b;font-size:12px;display:flex;justify-content:space-between;gap:15px}@media(max-width:920px){.hero{grid-template-columns:1fr;gap:32px;padding-top:60px}.preview{max-width:700px}.steps{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.shell{padding:0 18px}.top{height:76px}.navlink{display:none}.brand{font-size:17px}.hero{padding:50px 0}.stats{gap:18px;flex-wrap:wrap}.grid{gap:6px}.player{padding:8px;gap:6px}.avatar{width:29px;height:29px}.steps{grid-template-columns:1fr}.step{min-height:0}.step h3{margin-top:15px}.section{padding:45px 0}.footer{flex-direction:column}}
+
+/* MP TEAM — Wide desktop layout */
+
+.wrap,
+.container,
+.page-container {
+  width: 100%;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(20px, 3vw, 64px);
+  padding-right: clamp(20px, 3vw, 64px);
+}
+
+/* Make the hero fill more horizontal space */
+.hero {
+  width: 100%;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(32px, 4vw, 90px);
+  align-items: center;
+}
+
+/* Expand the player roster panel */
+.preview {
+  width: 100%;
+  max-width: none;
+}
+
+/* Larger player grid on desktop */
+@media (min-width: 1400px) {
+  .players {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Responsive tablets and phones */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .players {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .wrap,
+  .container,
+  .page-container {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .players {
+    grid-template-columns: 1fr;
+  }
+}
 </style></head><body><div class="shell"><header class="top"><div class="brand"><span class="brand-mark">M</span><span>MP TEAM <small>/ STEAM</small></span></div><div class="right"><a class="navlink" href="#setup">HOW IT WORKS</a><select class="lang" id="lang" aria-label="Language"><option value="en">🇬🇧 EN</option><option value="pt">🇵🇹 PT</option></select></div><a href="https://mp-team-api.mpteamup.workers.dev/admin"
    target="_blank"
    rel="noopener noreferrer"
