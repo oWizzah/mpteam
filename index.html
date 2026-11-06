@@ -59,89 +59,15 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* MP TEAM — Clean navigation */
-
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.navright {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-left: auto;
-}
-
-.admin-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  min-width: 0;
-  padding: 9px 14px;
-  border: 1px solid #ef6c36;
-  border-radius: 8px;
-  background: rgba(239,108,54,0.12);
-  color: #ff986c;
-  font-size: 12px;
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.admin-btn:hover {
-  background: #ef6c36;
-  color: #111614;
-}
-
-@media (max-width: 600px) {
-  .nav {
-    gap: 10px;
-  }
-
-  .navright {
-    gap: 6px;
-  }
-
-  .admin-btn {
-    padding: 8px 10px;
-    font-size: 11px;
-  }
-}
-</style></head><body><div class="shell">
-<header class="nav">
-  <div class="brand">
-    <div class="mark">M</div>
-    MP TEAM
-    <span class="brand-subtitle">/ STEAM</span>
-  </div>
-
-  <div class="navright">
-    <a class="navlink" href="#setup">
-      HOW IT WORKS
-    </a>
-
-    <a
-      class="admin-btn"
-      href="https://mp-team-api.mpteamup.workers.dev/admin"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      ⚙ ADMIN
-    </a>
-
-    <select id="language-select" aria-label="Language">
-      <option value="pt">PT</option>
-      <option value="en">EN</option>
-    </select>
-  </div>
-</header>
-<main><section class="hero"><div><div class="eyebrow">RUST SQUAD MANAGEMENT</div><h1>Your squad.<br><em>One click away.</em></h1><p class="intro" id="subtitle"></p><div class="stats"><div class="metric"><strong id="memberCount">—</strong><span>Team players</span></div><div class="metric"><strong id="prefixMetric">MP</strong><span>Nickname prefix</span></div><div class="metric"><strong>0</strong><span>Extensions</span></div></div><a class="btn" id="bookmark" href="#" draggable="true">⚡ MP TEAM</a><p class="hint" id="notice"></p><p class="error" id="error" role="status"></p></div><aside class="preview"><div class="preview-header"><strong id="rosterTitle">SQUAD ROSTER</strong><span class="live">● LIVE ROSTER</span></div><div id="players" class="grid"></div><div class="preview-bottom"><span>● CONNECTED TO MP TEAM</span><span id="prefix"></span></div></aside></section><section class="section" id="setup"><div class="eyebrow">QUICK START</div><h2 id="setupTitle"></h2><div class="steps"><article class="step"><div class="step-num">01 /</div><h3>Bookmarks</h3><p id="step1"></p></article><article class="step"><div class="step-num">02 /</div><h3>MP TEAM</h3><p id="step2"></p></article><article class="step"><div class="step-num">03 /</div><h3>Steam Community</h3><p id="step3"></p></article><article class="step"><div class="step-num">04 /</div><h3>Confirm</h3><p id="step4"></p></article></div><div class="notice">ⓘ &nbsp; Steam friend requests and nicknames use unofficial Steam Community endpoints and may fail or change. Never share Steam credentials.</div></section></main><footer class="footer"><strong>MP TEAM · RUST SQUAD</strong><span id="footer"></span></footer></div><script>
+</style></head><body><div class="shell"><header class="top"><div class="brand"><span class="brand-mark">M</span><span>MP TEAM <small>/ STEAM</small></span></div><div class="right"><a class="navlink" href="#setup">HOW IT WORKS</a><select class="lang" id="lang" aria-label="Language"><option value="en">🇬🇧 EN</option><option value="pt">🇵🇹 PT</option></select></div><a href="https://mp-team-api.mpteamup.workers.dev/admin"
+   target="_blank"
+   rel="noopener noreferrer"
+   style="display:inline-block;padding:10px 18px;
+          background:#ef6c36;color:#111;
+          border-radius:8px;font-weight:bold;
+          text-decoration:none;">
+  ⚙️ ADMIN DASHBOARD
+</a></header><main><section class="hero"><div><div class="eyebrow">RUST SQUAD MANAGEMENT</div><h1>Your squad.<br><em>One click away.</em></h1><p class="intro" id="subtitle"></p><div class="stats"><div class="metric"><strong id="memberCount">—</strong><span>Team players</span></div><div class="metric"><strong id="prefixMetric">MP</strong><span>Nickname prefix</span></div><div class="metric"><strong>0</strong><span>Extensions</span></div></div><a class="btn" id="bookmark" href="#" draggable="true">⚡ MP TEAM</a><p class="hint" id="notice"></p><p class="error" id="error" role="status"></p></div><aside class="preview"><div class="preview-header"><strong id="rosterTitle">SQUAD ROSTER</strong><span class="live">● LIVE ROSTER</span></div><div id="players" class="grid"></div><div class="preview-bottom"><span>● CONNECTED TO MP TEAM</span><span id="prefix"></span></div></aside></section><section class="section" id="setup"><div class="eyebrow">QUICK START</div><h2 id="setupTitle"></h2><div class="steps"><article class="step"><div class="step-num">01 /</div><h3>Bookmarks</h3><p id="step1"></p></article><article class="step"><div class="step-num">02 /</div><h3>MP TEAM</h3><p id="step2"></p></article><article class="step"><div class="step-num">03 /</div><h3>Steam Community</h3><p id="step3"></p></article><article class="step"><div class="step-num">04 /</div><h3>Confirm</h3><p id="step4"></p></article></div><div class="notice">ⓘ &nbsp; Steam friend requests and nicknames use unofficial Steam Community endpoints and may fail or change. Never share Steam credentials.</div></section></main><footer class="footer"><strong>MP TEAM · RUST SQUAD</strong><span id="footer"></span></footer></div><script>
 // REQUIRED: replace the URL below with your deployed Cloudflare Worker URL (no trailing slash).
 const API_BASE='https://mp-team-api.mpteamup.workers.dev';
 const strings={en:{subtitle:'Your live Steam team roster, managed privately through Discord.',setup:'Add the team without installing an extension',steps:['Show your bookmarks bar (Ctrl+Shift+B).','Drag the orange MP TEAM button onto your bookmarks bar.','Open Steam Community in this same browser and sign in.','On Steam Community, click the saved MP TEAM bookmark and confirm.'],button:'⚡ MP TEAM — drag to bookmarks',notice:'The bookmark retrieves the current player list each time. Steam may change or reject its unofficial endpoints.',roster:'Team players',prefix:'Nickname prefix:',footer:'Admin access is available only on the private Worker admin URL.',err:'Unable to load roster. Check the Worker URL and deployment.'},pt:{subtitle:'Lista Steam atualizada em tempo real, gerida de forma privada através do Discord.',setup:'Adicionar a equipa sem instalar extensões',steps:['Mostra a barra de favoritos (Ctrl+Shift+B).','Arrasta o botão laranja MP TEAM para a barra de favoritos.','Abre a Steam Community neste navegador e inicia sessão.','Na Steam Community, clica no favorito MP TEAM e confirma.'],button:'⚡ MP TEAM — arrastar para favoritos',notice:'O favorito obtém sempre a lista atual. A Steam pode alterar ou rejeitar os seus endpoints internos.',roster:'Jogadores da equipa',prefix:'Prefixo das alcunhas:',footer:'O acesso de administrador está disponível apenas no endereço privado do Worker.',err:'Não foi possível carregar a lista. Verifica o endereço e a publicação do Worker.'}};
