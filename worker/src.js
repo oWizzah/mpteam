@@ -1,4 +1,4 @@
-﻿import adminHtml from './admin.html';
+import adminHtml from './admin.html';
 const DAY=86400;
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...headers}});
 const cookie=(name,value,maxAge)=>`${name}=${encodeURIComponent(value)}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
@@ -13,58 +13,12 @@ function redirect(url,headers={}){return new Response(null,{status:302,headers:{
 
 // Discord interaction signatures must be verified before parsing the payload.
 const hexBytes = hex => new Uint8Array((hex.match(/.{2}/g)||[]).map(x=>parseInt(x,16)));
-async function verifyDiscord(req, raw, env) {
-  const sig = req.headers.get('X-Signature-Ed25519') || '';
-  const ts = req.headers.get('X-Signature-Timestamp') || '';
-  const publicKey = String(env.DISCORD_PUBLIC_KEY || '').trim();
-
-  if (!/^[a-fA-F0-9]{128}$/.test(sig)) {
-    console.warn('Discord verify: invalid signature header');
-    return false;
-  }
-
-  if (!/^[0-9]{10}$/.test(ts)) {
-    console.warn('Discord verify: invalid timestamp header');
-    return false;
-  }
-
-  if (!/^[a-fA-F0-9]{64}$/.test(publicKey)) {
-    console.warn('Discord verify: PUBLIC KEY missing or invalid');
-    return false;
-  }
-
-  const age = Math.abs(Date.now() / 1000 - Number(ts));
-
-  if (age > 300) {
-    console.warn('Discord verify: timestamp outside allowed window');
-    return false;
-  }
-
-  try {
-    const key = await crypto.subtle.importKey(
-      'raw',
-      hexBytes(publicKey),
-      { name: 'Ed25519' },
-      false,
-      ['verify']
-    );
-
-    const valid = await crypto.subtle.verify(
-      { name: 'Ed25519' },
-      key,
-      hexBytes(sig),
-      new TextEncoder().encode(ts + raw)
-    );
-
-    if (!valid) {
-      console.warn('Discord verify: SIGNATURE MISMATCH');
-    }
-
-    return valid;
-  } catch (e) {
-    console.error('Discord verify: crypto error', e.name, e.message);
-    return false;
-  }
+async function verifyDiscord(req, raw, env){
+ const sig=req.headers.get('X-Signature-Ed25519')||'';
+ const ts=req.headers.get('X-Signature-Timestamp')||'';
+ if(!/^[a-fA-F0-9]{128}$/.test(sig)||!/^[0-9]{10,13}$/.test(ts)||!/^[a-fA-F0-9]{64}$/.test(env.DISCORD_PUBLIC_KEY||''))return false;
+ if(Math.abs(Date.now()/1000-Number(ts))>300)return false;
+ try{const key=await crypto.subtle.importKey('raw',hexBytes(env.DISCORD_PUBLIC_KEY),{name:'Ed25519'},false,['verify']);return await crypto.subtle.verify('Ed25519',key,hexBytes(sig),new TextEncoder().encode(ts+raw));}catch(e){console.error('Discord signature verification unavailable',e);return false;}
 }
 const interactionMessage=(content)=>json({type:4,data:{content,flags:64}});
 const snowflake=id=>/^\d{17,20}$/.test(id);
@@ -83,10 +37,10 @@ async function inviteDecision(env,inviteId,userId,choice){
 }
 async function sendLinkDM(env,discordId,invId,base){
  const dm=await discordApi(env,'/users/@me/channels','POST',{recipient_id:discordId});
- return discordApi(env,'/channels/'+dm.id+'/messages','POST',{content:'**MP TEAM â€” Connect your Steam account**\nYou accepted your invitation. Sign in with Discord and Steam to verify your SteamID64.\n'+base+'/join/'+invId+'\nLink expires with your invitation. Never share this link.',allowed_mentions:{parse:[]}});
+ return discordApi(env,'/channels/'+dm.id+'/messages','POST',{content:'**MP TEAM — Connect your Steam account**\nYou accepted your invitation. Sign in with Discord and Steam to verify your SteamID64.\n'+base+'/join/'+invId+'\nLink expires with your invitation. Never share this link.',allowed_mentions:{parse:[]}});
 }
 const htmlEscape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const page=(title,body)=>new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${htmlEscape(title)} Â· MP TEAM</title><style>body{font:16px system-ui;background:#0b1012;color:#f1f5ef;max-width:620px;margin:9vh auto;padding:24px}main{border:1px solid #37453f;border-radius:16px;background:#182021;padding:32px}a{display:inline-block;background:#f17a45;color:#121816;padding:13px 18px;border-radius:9px;font-weight:bold;text-decoration:none}p{line-height:1.6;color:#c4d0c9}</style><main><h1>${htmlEscape(title)}</h1>${body}</main></html>`,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'"}});
+const page=(title,body)=>new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${htmlEscape(title)} · MP TEAM</title><style>body{font:16px system-ui;background:#0b1012;color:#f1f5ef;max-width:620px;margin:9vh auto;padding:24px}main{border:1px solid #37453f;border-radius:16px;background:#182021;padding:32px}a{display:inline-block;background:#f17a45;color:#121816;padding:13px 18px;border-radius:9px;font-weight:bold;text-decoration:none}p{line-height:1.6;color:#c4d0c9}</style><main><h1>${htmlEscape(title)}</h1>${body}</main></html>`,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'"}});
 async function discordOAuthUser(code,redirectUri,env){
  const r=await fetch('https://discord.com/api/v10/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:env.DISCORD_CLIENT_ID,client_secret:env.DISCORD_CLIENT_SECRET,grant_type:'authorization_code',code,redirect_uri:redirectUri})});
  if(!r.ok)throw Error('Discord OAuth exchange failed');const token=await r.json();const u=await fetch('https://discord.com/api/v10/users/@me',{headers:{Authorization:'Bearer '+token.access_token}});if(!u.ok)throw Error('Discord identity verification failed');return u.json();
@@ -164,6 +118,31 @@ export default {async fetch(req,env,ctx){try{
   try{const path='/guilds/'+encodeURIComponent(env.DISCORD_GUILD_ID)+'/members'+(query?'/search?query='+encodeURIComponent(query)+'&limit=100':'?limit=100');const members=await discordApi(env,path,'GET');return json({members:members.filter(m=>m.user&&!m.user.bot).map(m=>({id:m.user.id,username:m.user.global_name||m.user.username,nick:m.nick||null}))});}
   catch(e){return json({error:e.message+' (check Server Members Intent and bot guild membership)'},502)}
  }
+  if(path==='/api/admin/excluded-members'&&req.method==='GET'){
+   if(!await auth(req,env))return json({error:'Unauthorized'},401);
+   const {results}=await env.DB.prepare('SELECT discord_id,display_name FROM excluded_members ORDER BY display_name').all();
+   return json({members:results});
+  }
+  if(path==='/api/admin/excluded-members'&&req.method==='POST'){
+   if(req.headers.get('Origin')!==originOf(req)||!req.headers.get('Content-Type')?.startsWith('application/json'))return json({error:'Bad origin or content type'},403);
+   if(!await auth(req,env))return json({error:'Unauthorized'},401);
+   const body=await req.json(),id=String(body.discord_id||'').trim(),name=String(body.display_name||'').trim();
+   if(!snowflake(id)||!name||name.length>100)return json({error:'Invalid Discord member'},400);
+   await env.DB.prepare('INSERT INTO excluded_members(discord_id,display_name) VALUES(?,?) ON CONFLICT(discord_id) DO UPDATE SET display_name=excluded.display_name').bind(id,name).run();
+   return json({ok:true});
+  }
+  const excludedMatch=path.match(/^\/api\/admin\/excluded-members\/(\d{17,20})$/);
+  if(excludedMatch&&req.method==='DELETE'){
+   if(req.headers.get('Origin')!==originOf(req))return json({error:'Bad origin'},403);
+   if(!await auth(req,env))return json({error:'Unauthorized'},401);
+   await env.DB.prepare('DELETE FROM excluded_members WHERE discord_id=?').bind(excludedMatch[1]).run();
+   return json({ok:true});
+  }
+  if(path==='/api/admin/linked-members'&&req.method==='GET'){
+   if(!await auth(req,env))return json({error:'Unauthorized'},401);
+   const {results}=await env.DB.prepare('SELECT l.discord_id,l.steamid,p.nickname FROM steam_links l INNER JOIN players p ON p.steamid=l.steamid').all();
+   return json({members:results});
+  }
  if(path==='/api/admin/invitations'&&req.method==='GET'){
   if(!await auth(req,env))return json({error:'Unauthorized'},401);
   const {results}=await env.DB.prepare('SELECT id,discord_id,steamid,nickname,status,created_at,expires_at FROM invitations ORDER BY created_at DESC LIMIT 100').all();return json({invitations:results});
@@ -178,7 +157,14 @@ export default {async fetch(req,env,ctx){try{
    const body=await req.json();const discordId=String(body.discord_id||'').trim(),steamid='',nickname=String(body.nickname||'').trim();
    if(!snowflake(discordId)||!nickname||nickname.length>64)return json({error:'Enter a valid Discord ID and nickname'},400);
    if(!env.DISCORD_BOT_TOKEN)return json({error:'DISCORD_BOT_TOKEN secret is missing'},503);
+    const excluded=await env.DB.prepare('SELECT discord_id FROM excluded_members WHERE discord_id=?').bind(discordId).first();
+    if(excluded)return json({error:'This Discord member is marked as already on the team'},409);
+    const accepted=await env.DB.prepare("SELECT id FROM invitations WHERE discord_id=? AND status='accepted' LIMIT 1").bind(discordId).first();
+    if(accepted)return json({error:'This Discord member already joined the team'},409);
 
+
+    const existing=await env.DB.prepare('SELECT p.nickname FROM steam_links l INNER JOIN players p ON p.steamid=l.steamid WHERE l.discord_id=?').bind(discordId).first();
+    if(existing)return json({error:'This Discord account is already linked to team member '+existing.nickname},409);
    const pending=await env.DB.prepare("SELECT id FROM invitations WHERE discord_id=? AND status IN ('pending','awaiting_steam') AND expires_at>?").bind(discordId,Math.floor(Date.now()/1000)).first();if(pending)return json({error:'A pending invitation already exists for this Discord account or SteamID'},409);
    const id=crypto.randomUUID(),now=Math.floor(Date.now()/1000),expires=now+DAY;
    // Check DM access before saving the invitation. Discord may reject DMs due to privacy settings.
@@ -186,7 +172,7 @@ export default {async fetch(req,env,ctx){try{
    try{dm=await discordApi(env,'/users/@me/channels','POST',{recipient_id:discordId});}
    catch(e){return json({error:'Could not open Discord DM: '+e.message},502);}
    await env.DB.prepare("INSERT INTO invitations(id,discord_id,steamid,nickname,status,expires_at) VALUES(?,?,?,?,'pending',?)").bind(id,discordId,steamid,nickname,expires).run();
-   const content=`**MP TEAM â€” Rust squad invitation**
+   const content=`**MP TEAM — Rust squad invitation**
 You've been invited to join MP TEAM as **${nickname.replace(/[*_`~|<>@]/g,'')}**.
 This invite expires in 24 hours. Only your Discord account can accept it.\nAfter accepting, you'll verify your Steam account on our website.`;
    try{await discordApi(env,'/channels/'+dm.id+'/messages','POST',{content,allowed_mentions:{parse:[]},components:[{type:1,components:[{type:2,style:3,label:'Accept',custom_id:'mpinv:accept:'+id},{type:2,style:4,label:'Decline',custom_id:'mpinv:decline:'+id}]}]});}
@@ -208,5 +194,3 @@ This invite expires in 24 hours. Only your Discord account can accept it.\nAfter
  }
  if(path==='/')return redirect('/admin');return json({error:'Not found'},404);
  }catch(e){console.error(e);if(e.message?.includes('UNIQUE constraint'))return json({error:'SteamID already exists'},409);return json({error:'Internal server error'},500);}}};
-
-
